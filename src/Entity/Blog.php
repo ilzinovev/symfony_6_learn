@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: BlogRepository::class)]
 class Blog
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,6 +25,12 @@ class Blog
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $text = null;
+
+
+    #[ORM\ManyToOne(targetEntity: Category::class)]
+    #[ORM\JoinColumn(name: 'category_id', referencedColumnName: 'id')]
+    private Category|null $category = null;
+
 
     public function getId(): ?int
     {
@@ -64,6 +71,19 @@ class Blog
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+        return $this;
+    }
+
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
         return $this;
     }
 
