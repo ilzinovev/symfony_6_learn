@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 #[ORM\Entity(repositoryClass: BlogRepository::class)]
 class Blog
@@ -36,8 +37,8 @@ class Blog
     #[ORM\JoinTable(name: 'tags_to_blog')]
     #[ORM\JoinColumn(name: 'blog_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'tag_id', referencedColumnName: 'id', unique: true)]
-    #[ORM\ManyToMany(targetEntity: 'Tag')]
-    private Collection $tags;
+    #[ORM\ManyToMany(targetEntity: 'Tag',cascade: ['persist'])]
+    private Collection|PersistentCollection $tags;
 
 
 
