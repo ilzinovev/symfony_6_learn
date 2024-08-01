@@ -5,15 +5,20 @@
 {% block body %}
     <h1>Blog index</h1>
 
+    {{ form_start(searchForm) }}
+    {{ form_widget(searchForm) }}
+    <button class="btn">find</button>
+    {{ form_end(searchForm) }}
+
     <table class="table">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Text</th>
-                <th>actions</th>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Text</th>
+            <th>actions</th>
+        </tr>
         </thead>
         <tbody>
         {% for blog in blogs %}

@@ -17,34 +17,41 @@ class BlogType extends AbstractType
 
     public function __construct(
         private readonly TagTransformer $transformer
-    )
-    {
-
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('title', TextType::class, [
+                'required' => true,
+                'help'     => 'The title of the blog',
+                'attr'     => [
+                    'class' => 'myclass'
+                ]
+            ])
+            ->add('description', TextareaType::class, [
                 'required' => true
             ])
-            ->add('description', TextareaType::class)
             ->add('text', TextareaType::class, ['required' => false])
             ->add('category', EntityType::class, [
-                'class' => Category::class,
-                'choice_label' => 'name',
-                'required' => false,
-                'empty_data' => null
+                'class'       => Category::class,
+                'query_builder' => function($repository) {
+                  return $repository->createQueryBuilder('p')->orderBy('p.name','ASC');
+                },
+                'required'    => false,
+                'empty_data'  => '',
+                'placeholder' => 'выбор категории'
+
             ])
             ->add('tags', TextType::class, [
-                'label' => 'Tags',
+                'label'    => 'Tags',
                 'required' => false,
 
             ]);
 
         $builder->get('tags')
             ->addModelTransformer($this->transformer);
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void
