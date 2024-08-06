@@ -2,10 +2,17 @@
 
 namespace App\Filter;
 
+use App\Entity\User;
+
 class BlogFilter
 {
     private ?string $title = null;
     private ?string $text = null;
+
+    public function __construct(private ?User $user = null)
+    {
+
+    }
 
     /**
      * @return string|null
@@ -37,4 +44,13 @@ class BlogFilter
 
         return $this;
     }
+
+    /**
+     * @return User|null
+     */
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
 }
