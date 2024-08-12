@@ -26,11 +26,10 @@ class LoginController extends AbstractController
     #[Route('/login/redirect', name: 'app_login_redirect')]
     public function redirectLogin(Security $security): Response
     {
-        dd($this->getUser());
         if ($security->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('app_blog_index');
         } else {
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('app_user_blog_index');
         }
     }
 }
