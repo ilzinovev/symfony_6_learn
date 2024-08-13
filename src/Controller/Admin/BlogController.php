@@ -8,6 +8,7 @@ use App\Form\BlogFilterType;
 use App\Form\BlogType;
 use App\Repository\BlogRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,17 +18,23 @@ use Symfony\Component\Routing\Attribute\Route;
 class BlogController extends AbstractController
 {
     #[Route('/', name: 'app_blog_index', methods: ['GET'])]
-    public function index(Request $request, BlogRepository $blogRepository): Response
+    public function index(Request $request, BlogRepository $blogRepository, PaginatorInterface $paginator): Response
     {
         $blogFilter = new BlogFilter();
 
-        $form       = $this->createForm(BlogFilterType::class, $blogFilter);
+        $form = $this->createForm(BlogFilterType::class, $blogFilter);
         $form->handleRequest($request);
-        $content = $form->get('content')->getData();
+        //$content = $form->get('content')->getData();
+
+        $pagination = $paginator->paginate(
+            $blogRepository->findByBlogFilter($blogFilter),
+            $request->query->getInt('page', 1),
+            10
+        );
 
         return $this->render('blog/index.html.twig', [
-            'blogs' => $blogRepository->findByBlogFilter($blogFilter),
-            'searchForm'  => $form->createView()
+            'pagination'      => $pagination,
+            'searchForm' => $form->createView()
         ]);
     }
 
