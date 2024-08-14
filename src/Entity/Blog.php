@@ -49,6 +49,29 @@ class Blog
     private Collection|PersistentCollection $tags;
 
 
+    #[Assert\NotBlank]
+    #[ORM\Column(type: Types::SMALLINT)]
+    private ?string $percent = null;
+
+    /**
+     * @return string|null
+     */
+    public function getPercent(): ?string
+    {
+        return $this->percent;
+    }
+
+    /**
+     * @param string|null $percent
+     */
+    public function setPercent(?string $percent): static
+    {
+        $this->percent = $percent;
+
+        return $this;
+    }
+
+
     public function __construct(UserInterface|User $user)
     {
         $this->user = $user;
