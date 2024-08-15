@@ -49,7 +49,6 @@ class Blog
     private Collection|PersistentCollection $tags;
 
 
-    #[Assert\NotBlank]
     #[ORM\Column(type: Types::SMALLINT)]
     private ?string $percent = null;
 
