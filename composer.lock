@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dbcaff451a752917601591dcc56438d0",
+    "content-hash": "c7b836314543b989ee84f908535bb561",
     "packages": [
         {
             "name": "composer/semver",
@@ -4393,16 +4393,16 @@
         },
         {
             "name": "symfony/messenger",
-            "version": "v6.4.9",
+            "version": "v6.4.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/messenger.git",
-                "reference": "c211861f5f84860b9663c43dcd440ac8bcb1d250"
+                "reference": "7985801bc96cd5c130746b422d49e371ba5d66de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/messenger/zipball/c211861f5f84860b9663c43dcd440ac8bcb1d250",
-                "reference": "c211861f5f84860b9663c43dcd440ac8bcb1d250",
+                "url": "https://api.github.com/repos/symfony/messenger/zipball/7985801bc96cd5c130746b422d49e371ba5d66de",
+                "reference": "7985801bc96cd5c130746b422d49e371ba5d66de",
                 "shasum": ""
             },
             "require": {
@@ -4460,7 +4460,7 @@
             "description": "Helps applications send and receive messages to/from other applications or via message queues",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/messenger/tree/v6.4.9"
+                "source": "https://github.com/symfony/messenger/tree/v6.4.10"
             },
             "funding": [
                 {
@@ -4476,7 +4476,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-24T14:04:31+00:00"
+            "time": "2024-07-09T18:35:14+00:00"
         },
         {
             "name": "symfony/mime",

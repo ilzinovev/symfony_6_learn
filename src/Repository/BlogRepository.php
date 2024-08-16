@@ -24,11 +24,10 @@ class BlogRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('b')->setMaxResults(2)->getQuery()->getResult();
     }
 
-    public function findByBlogFilter(BlogFilter $blogFilter) : QueryBuilder
+    public function findByBlogFilter(BlogFilter $blogFilter): QueryBuilder
     {
         $blogs = $this->createQueryBuilder('b')
-             ->innerJoin('b.user', 'u')
-            ->addSelect('u')
+            ->leftJoin('b.user', 'u')
             ->where('1=1');
 
         if ($blogFilter->getUser()) {
@@ -40,7 +39,7 @@ class BlogRepository extends ServiceEntityRepository
             $blogs->andWhere('b.title LIKE :title')
                 ->setParameter('title', '%' . $blogFilter->getTitle() . '%');
         }
-        $blogs->orderBy('b.id');
+        $blogs->orderBy('b.id', 'DESC');
 
         return $blogs;
     }

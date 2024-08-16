@@ -50,7 +50,7 @@ class Blog
 
 
     #[ORM\Column(type: Types::SMALLINT)]
-    private ?string $percent = null;
+    private ?int $percent = null;
 
     /**
      * @return string|null

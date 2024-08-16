@@ -6,6 +6,7 @@ use App\Entity\Blog;
 use App\Filter\BlogFilter;
 use App\Form\BlogFilterType;
 use App\Form\BlogType;
+use App\Message\ContentWatchJob;
 use App\Repository\BlogRepository;
 use App\Service\ContentWatchApi;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +14,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -20,7 +22,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class BlogController extends AbstractController
 {
     #[Route('/', name: 'app_user_blog_index', methods: ['GET'])]
-    public function index(Request $request, BlogRepository $blogRepository,PaginatorInterface $paginator): Response
+    public function index(Request $request, BlogRepository $blogRepository, PaginatorInterface $paginator): Response
     {
         $blogFilter = new BlogFilter($this->getUser());
 
@@ -34,7 +36,7 @@ class BlogController extends AbstractController
         );
 
         return $this->render('blog/index.html.twig', [
-            'pagination'      => $pagination,
+            'pagination' => $pagination,
             'searchForm' => $form->createView()
         ]);
     }
@@ -43,18 +45,18 @@ class BlogController extends AbstractController
     public function new(
         Request $request,
         EntityManagerInterface $entityManager,
-        ContentWatchApi $contentWatchApi
+        MessageBusInterface $bus
     ): Response {
         $blog = new Blog($this->getUser());
         $form = $this->createForm(BlogType::class, $blog);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-
-            $blog->setPercent($contentWatchApi->checkText($blog->getText()));
+            /*  $blog->setPercent($contentWatchApi->checkText($blog->getText()));*/
             $entityManager->persist($blog);
             $entityManager->flush();
+
+            $bus->dispatch(new ContentWatchJob($blog->getId()));
 
 
             return $this->redirectToRoute('app_user_blog_index', [], Response::HTTP_SEE_OTHER);
