@@ -56,7 +56,7 @@ class BlogController extends AbstractController
             $entityManager->persist($blog);
             $entityManager->flush();
 
-            $bus->dispatch(new ContentWatchJob($blog->getId()));
+       //     $bus->dispatch(new ContentWatchJob($blog->getId()));
 
 
             return $this->redirectToRoute('app_user_blog_index', [], Response::HTTP_SEE_OTHER);

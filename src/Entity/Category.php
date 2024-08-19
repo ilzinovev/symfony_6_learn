@@ -4,10 +4,13 @@ namespace App\Entity;
 
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 class Category
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -33,10 +36,11 @@ class Category
         return $this;
     }
 
-    public function getFullName():string
+    public function getFullName(): string
     {
-        return $this->name.' полное имя';
+        return $this->name . ' полное имя';
     }
+
     public function __toString(): string
     {
         return $this->name;
