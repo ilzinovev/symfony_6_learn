@@ -19,9 +19,13 @@ class BlogRepository extends ServiceEntityRepository
         parent::__construct($registry, Blog::class);
     }
 
+
+    /**
+     * @return array<Blog>
+     */
     public function getBlogs(): array
     {
-        return $this->createQueryBuilder('b')->setMaxResults(2)->getQuery()->getResult();
+        return $this->createQueryBuilder('b')->getQuery()->getResult();
     }
 
     public function findByBlogFilter(BlogFilter $blogFilter): QueryBuilder
