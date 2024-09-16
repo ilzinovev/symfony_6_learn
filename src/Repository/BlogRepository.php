@@ -25,7 +25,13 @@ class BlogRepository extends ServiceEntityRepository
      */
     public function getBlogs(): array
     {
-        return $this->createQueryBuilder('b')->getQuery()->getResult();
+        return $this->createQueryBuilder('b')->setMaxResults(6)->orderBy('b.id', 'DESC')->getQuery()->getResult();
+    }
+
+
+    public function getByTitle(string $title): ?Blog
+    {
+        return $this->findOneBy(['title' => $title]);
     }
 
     public function findByBlogFilter(BlogFilter $blogFilter): QueryBuilder
