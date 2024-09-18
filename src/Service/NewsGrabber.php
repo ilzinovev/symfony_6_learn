@@ -6,30 +6,47 @@ use App\Entity\Blog;
 use App\Repository\BlogRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Client;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 class NewsGrabber
 {
 
+    private LoggerInterface $logger;
+
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly EntityManagerInterface $em,
-        private readonly BlogRepository $blogRepository
+        private readonly BlogRepository $blogRepository,
+        private readonly ParameterBagInterface $parameterBag,
+        private readonly HttpClient $httpClient
     ) {
     }
 
-    public function importNews(): void
+    public function setLogger(LoggerInterface $logger)
     {
-        $client = new Client([
-            'timeout' => 15.0,
-        ]);
+        $this->logger = $logger;
 
-        $texts    = [];
-        $response = $client->get('https://www.engadget.com/news/');
-        $crawler  = new Crawler($response->getBody()->getContents());
+        return $this;
+    }
+
+    /**
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function importNews(?int $count = null, bool $dryRun = false): void
+    {
+        $this->logger->info('Start getting news');;
+
+        $texts = [];
+
+        $crawler = new Crawler($this->httpClient->get('https://www.engadget.com/news/'));
         $crawler->filter('h4.My\(0\) > a')->each(
-            function (Crawler $crawler) use (&$texts) {
+            function (Crawler $crawler) use (&$texts, $count) {
+                if ($count && count($texts) >= $count) {
+                    return;
+                }
                 $texts[] = [
                     'title' => $crawler->text(),
                     'href'  => $crawler->attr('href')
@@ -39,31 +56,50 @@ class NewsGrabber
 
         unset($crawler);
 
+        $this->logger->info(sprintf('Get %d news', count($texts)));
+
+
         foreach ($texts as &$text) {
-            $response     = $client->get('https://www.engadget.com' . $text['href']);
-            $crawler      = new Crawler($response->getBody()->getContents());
+            $crawler      = new Crawler($this->httpClient->get('https://www.engadget.com' . $text['href']));
             $crawlerBody  = $crawler->filter('div.caas-body')->first();
             $text['text'] = $crawlerBody->text();
+
+            $this->logger->info(sprintf('Parsing news %s', $text['title']));
         }
 
         unset($text);
 
-        $this->saveNews($texts);
+        $this->saveNews($texts, $dryRun);
     }
 
-    private function saveNews(array $texts): void
+    private function saveNews(array $texts, bool $dryRun): void
     {
-        $blogUser = $this->userRepository->find(132);
+        $this->logger->info('Save news');
 
-        foreach ($texts as $item) {
-            if($this->blogRepository->getByTitle($item['title'])){
+        $blogUser = $this->userRepository->find($this->parameterBag->get('autoblog'));
+
+        if (!$blogUser) {
+            $this->logger->error('user not found');
+
+            return;
+        }
+
+        foreach ($texts as $text) {
+            if ($this->blogRepository->getByTitle($text['title'])) {
+                $this->logger->info(sprintf('News already exists %s', $text['title']));
                 continue;
             }
+
+            if ($dryRun) {
+                continue;
+            }
+            $this->logger->info(sprintf('Save blog %s', $text['title']));
+
             $blog
                 = new Blog($blogUser);
-            $blog->setTitle($item['title'])
-                ->setDescription(mb_substr($item['text'], 0, 1000))
-                ->setText($item['text'])
+            $blog->setTitle($text['title'])
+                ->setDescription(mb_substr($text['text'], 0, 1000))
+                ->setText($text['text'])
                 ->setStatus('pending');
 
             $this->em->persist($blog);

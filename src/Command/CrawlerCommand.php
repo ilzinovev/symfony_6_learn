@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -25,13 +26,16 @@ class CrawlerCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description');
+            ->addArgument('count', InputArgument::OPTIONAL, 'News count')
+            ->addOption('dryRun', null, InputOption::VALUE_OPTIONAL);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->newsGrabber->importNews();
+        $count  = $input->getArgument('count');
+        $dryRun = (bool) $input->getOption('dryRun');
+        $logger = new ConsoleLogger($output);
+        $this->newsGrabber->setLogger($logger)->importNews($count, $dryRun);
 
         return Command::SUCCESS;
     }

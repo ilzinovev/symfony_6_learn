@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Web\App\Controller;
+namespace Tests\Web\App\Controller;
 
 use App\Factory\BlogFactory;
 use App\Factory\UserFactory;

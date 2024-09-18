@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Helpers;
+namespace Tests\Helpers;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Foundry\Test\Factories;

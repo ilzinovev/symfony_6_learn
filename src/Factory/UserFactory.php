@@ -17,6 +17,8 @@ final class UserFactory extends PersistentProxyObjectFactory
      */
     public function __construct()
     {
+                parent::__construct();
+
     }
 
     public static function class(): string
