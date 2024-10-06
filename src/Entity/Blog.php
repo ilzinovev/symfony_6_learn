@@ -57,12 +57,19 @@ class Blog
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     private ?int $percent = null;
 
-    #[Assert\NotBlank]
+
     #[ORM\Column(type: Types::STRING)]
     private ?string $status = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?DateTime $blockedAt;
+
+    /**
+     * @var Collection<int, Comment>
+     */
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'blog', orphanRemoval: true, cascade: ['persist'])]
+    #[ORM\OrderBy(['id' => 'DESC'])]
+    private Collection $comments;
 
     /**
      * @return DateTime|null
@@ -123,7 +130,9 @@ class Blog
 
     public function __construct(UserInterface|User $user)
     {
-        $this->user = $user;
+        $this->status   = 'pending';
+        $this->user     = $user;
+        $this->comments = new ArrayCollection();
     }
 
 
@@ -228,6 +237,36 @@ class Blog
     public function addTag(Tag $tag): void
     {
         $this->tags[] = $tag;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): static
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setBlog($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): static
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getBlog() === $this) {
+                $comment->setBlog(null);
+            }
+        }
+
+        return $this;
     }
 
 

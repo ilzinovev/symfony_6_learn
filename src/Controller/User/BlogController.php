@@ -54,7 +54,7 @@ class BlogController extends AbstractController
             $entityManager->persist($blog);
             $entityManager->flush();
 
-       //     $bus->dispatch(new ContentWatchJob($blog->getId()));
+            //     $bus->dispatch(new ContentWatchJob($blog->getId()));
 
 
             return $this->redirectToRoute('app_user_blog_index', [], Response::HTTP_SEE_OTHER);
@@ -93,13 +93,13 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_user_blog_delete', methods: ['POST'])]
+    #[IsGranted('edit', 'blog', 'Blog not found', 404)]
+    #[Route('/{id}/delete', name: 'app_user_blog_delete', methods: ['GET'])]
     public function delete(Request $request, Blog $blog, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $blog->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($blog);
-            $entityManager->flush();
-        }
+        $entityManager->remove($blog);
+        $entityManager->flush();
+
 
         return $this->redirectToRoute('app_user_blog_index', [], Response::HTTP_SEE_OTHER);
     }

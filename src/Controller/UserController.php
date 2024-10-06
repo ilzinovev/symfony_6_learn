@@ -17,4 +17,5 @@ class UserController extends AbstractController
             'users' => $userRepository->findAll(),
         ]);
     }
+
 }

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Blog;
+use App\Form\CommentType;
 use App\Repository\BlogRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,6 +14,17 @@ class BlogController extends AbstractController
     #[Route('/blog/{id}', name: 'blog_view')]
     public function index(Blog $blog): Response
     {
-        return $this->render('default/blog.html.twig', ['blog' => $blog]);
+        $form = $this->createForm(CommentType::class, null, [
+            'action' => $this->generateUrl('blog_add_comment', ['blog' => $blog->getId()])
+        ]);
+
+        return $this->render('default/blog.html.twig', [
+            'blog' => $blog,
+            'form' => $form->createView()
+        ]);
+    }
+
+    public function addComment(Blog $blog): Response
+    {
     }
 }

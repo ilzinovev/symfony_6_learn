@@ -2,9 +2,23 @@
 
 {% block body %}
 
-    <div class="row">
+    <div >
         <h3>{{ blog.title }}</h3>
-<p>{{ blog.text }}</p>
+        <p>{{ blog.text }}</p>
+
+
+        <div>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn">{{ button_label|default('Save') }}</button>
+        {{ form_end(form) }}
+</div>
+                <div>
+        {% for comment in blog.comments %}
+
+                <p>{{ comment.id }}{{ comment.text }}</p><br/>
+        {% endfor %}
+</div>
     </div>
-<hr>
+    <hr>
 {% endblock %}
