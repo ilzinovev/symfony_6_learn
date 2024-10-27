@@ -11,6 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BlogRepository::class)]
@@ -20,19 +22,24 @@ class Blog
 
     use TimestampableEntity;
 
+
+    #[Groups(['select_box'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['select_box'])]
     #[Assert\NotBlank]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    #[Groups(['select_box'])]
     #[Assert\NotBlank(message: 'Заголовок обязательный')]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    #[Groups(['select_box'])]
     #[Assert\NotBlank]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $text = null;
@@ -43,10 +50,12 @@ class Blog
     private Category|null $category = null;
 
 
+    #[Ignore]
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private User|null $user = null;
 
+    #[Groups(['select_box'])]
     #[ORM\JoinTable(name: 'tags_to_blog')]
     #[ORM\JoinColumn(name: 'blog_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'tag_id', referencedColumnName: 'id', unique: true)]
@@ -67,6 +76,7 @@ class Blog
     /**
      * @var Collection<int, Comment>
      */
+    #[Ignore]
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'blog', orphanRemoval: true, cascade: ['persist'])]
     #[ORM\OrderBy(['id' => 'DESC'])]
     private Collection $comments;
@@ -268,6 +278,11 @@ class Blog
 
         return $this;
     }
-
+/*
+    public function getUserId(): int
+    {
+        return $this->getUser()->getId();
+    }
+*/
 
 }

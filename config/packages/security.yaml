@@ -27,6 +27,9 @@ security:
                 check_path: app_login
                 enable_csrf: true
                 default_target_path: app_login_redirect
+
+            json_login:
+                check_path: api_login
             logout:
                 path: /logout
                 target: app_login
